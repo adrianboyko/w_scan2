@@ -73,6 +73,7 @@
 #include "char-coding.h"
 #include "si_types.h"
 #include "tools.h"
+#include "repetition_ec.h"
 
 #define USE_EMUL
 #ifdef USE_EMUL
@@ -1978,7 +1979,11 @@ static int parse_section(struct section_buf *s)
 //section_syntax_indicator = buf[1] & 0x80;
 	section_length = (((buf[1] & 0x0f) << 8) | buf[2]) - 9;	// skip 9bytes: 5byte header + 4byte CRC32
 
-	if (!crc_check(&buf[0], section_length + 12)) {
+#ifdef DEBUG
+	simulate_noise((__u8*)&buf[0], section_length + 12);
+#endif
+
+	if (!crc_check(&buf[0], section_length + 12) && !attempt_correction((__u8*)&buf[0], section_length + 12)) {
 		int verbosity = 5;
 		int slow_rep_rate =
 		    30 + repetition_rate(flags.scantype, s->table_id);
@@ -2733,6 +2738,8 @@ static int __tune_to_transponder(int frontend_fd, struct transponder *t, int v)
 	int res;
 	struct timespec timeout, meas_start, meas_stop;
 	uint8_t delsys = t->delsys;
+
+    reset_repetition_ec();
 
 	if ((verbosity >= 1) && (v > 0)) {
 		char *buf = (char *)malloc(128);	// paranoia, max = 52

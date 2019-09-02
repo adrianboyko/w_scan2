@@ -12,6 +12,7 @@ w_scan2_SOURCES	= src/atsc_psip_section.c src/atsc_psip_section.h \
 		  src/dvbscan.c src/dvbscan.h \
 		  src/lnb.c src/lnb.h \
 		  src/parse-dvbscan.c src/parse-dvbscan.h \
+		  src/repetition_ec.c src/repetition_ec.h \
 		  src/satellites.c src/satellites.h src/satellites.dat \
 		  src/scan.c src/scan.h \
 		  src/section.c src/section.h \
